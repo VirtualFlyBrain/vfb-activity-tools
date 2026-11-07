@@ -80,7 +80,9 @@ def main(argv=None):
                 t = np.atleast_1d(tr["t"]).astype(float); ntrk += 1
                 cols = [np.atleast_1d(tr.get(k, np.full(t.shape, np.nan))) for k in ACTIONS + ["global_state"]]
                 for j in range(len(t)):
-                    row = [d, i + 1, f"{t[j]:.3f}"] + [("" if np.isnan(c[j]) else int(c[j])) for c in cols]
+                    # source action flags are 1 / -1 (-1 = not this action); export 1 / 0. global_state is kept as is.
+                    row = [d, i + 1, f"{t[j]:.3f}"] + [("" if np.isnan(c[j]) else int(c[j] > 0)) for c in cols[:-1]] \
+                        + [("" if np.isnan(cols[-1][j]) else int(cols[-1][j]))]
                     w.writerow(row)
                 sec = np.floor(t).astype(int); b = bins.setdefault(cond, {})
                 for s in np.unique(sec):
@@ -103,6 +105,7 @@ def main(argv=None):
     with open(os.path.join(a.out_dir, "metadata.json"), "w") as fh:
         json.dump({"schema_version": SCHEMA, "dataset": a.dataset, "licence": a.licence, "stimulus_windows_s": STIM,
                    "stimulus": "625 nm, 600 uW/cm2, 2 x 15 s", "actions": ACTIONS, "n_runs": len(runs),
+                   "flag_encoding": "action columns are 1 = action, 0 = not; global_state: 1 run, 2 cast, 3 stop, 4 hunch, 5 back, 6 roll",
                    "summary_definition": "fraction of tracked larvae with the action in any frame of that second"}, fh, indent=2)
     write_preview(bins, os.path.join(a.out_dir, "preview.svg"))
     print(f"{len(runs)} runs, {sum(r['n_tracks'] for r in runs)} tracks", file=sys.stderr)
