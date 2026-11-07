@@ -6,3 +6,7 @@ Turns uploaded behaviour/activity files into tidy, citable downloads for Virtual
 and writes per-run `behaviour/*.csv.gz`, `runs.csv`, `summary.csv`, `metadata.json` and `preview.svg`.
 First use: Randel et al. 2026 (Basin activation, Kenyon-cell silencing; bioRxiv 10.1101/2025.09.25.678485).
 The Argo `activity-publish` workflow in VirtualFlyBrain/vfb-k8s runs this image against the upload share.
+
+## Licence
+
+Apache-2.0, as for the other Virtual Fly Brain software. The data this tool processes keeps the licence of its source dataset.
